@@ -80,9 +80,32 @@ Nas configurações do site na hospedagem, adicione o domínio (por exemplo `age
 - **Avisos**: não há e-mail nem SMS. Ao concluir, o cliente vê um botão para avisar a barbearia pelo WhatsApp.
 - **Atualizar a agenda**: o painel recarrega a cada 60 segundos enquanto aberto em Hoje ou Agenda.
 
+## O que o painel do dono controla
+- **Hoje**: linha do dia, atendimentos, faturamento e lucro do dia; marcar concluído (com forma de pagamento), falta ou cancelar.
+- **Agenda**: semana por barbeiro, encaixes, bloqueio de horário, folgas, férias, feriados e dias com horário especial.
+- **Caixa**: receita, comissão de cada barbeiro, despesas e lucro do mês; meta mensal.
+- **Ajustes**: horários da barbearia e de cada barbeiro, intervalo entre clientes, antecedência mínima, prazo para o cliente cancelar, serviços, equipe, fotos, novidades, produtos, cursos, clientes e link para divulgar.
+- Quem agenda pode cancelar ou remarcar pelo link recebido (sem senha), dentro do prazo definido.
+
+## Atualizando um banco que já existe
+Faça um backup (Supabase > Database > Backups), abra o **SQL Editor** e rode de novo todo o `supabase/schema.sql`. Ele é seguro para rodar mais de uma vez e acrescenta as novas colunas, tabelas e funções sem apagar a agenda.
+
+## Fontes
+As fontes (Barlow Condensed e Instrument Sans) ficam em `fonts/`, hospedadas no próprio site. Não há chamada ao Google, o que ajuda na LGPD e na velocidade.
+
+## Pontos de atenção extras
+- **Encaixe do dono**: o painel permite dois atendimentos no mesmo horário só se for marcado como encaixe. O banco não bloqueia inserções feitas diretamente pelo dono.
+- **Fotos da equipe**: as fotos atuais têm qualidade baixa; troque por fotos maiores em Ajustes > Equipe.
+- **Relatórios**: lucro = receita − comissão − despesas, calculado no navegador a partir do que foi lançado.
+
 ## Estrutura
 ```
-index.html   config.js   app.js   styles.css   _headers
+index.html   config.js   styles.css   _headers
+core.js      dados, regras de horário, componentes e rotas
+client.js    página inicial e fluxo de agendamento do cliente
+owner.js     painel do dono (Hoje, Agenda, Caixa)
+settings.js  Ajustes do painel (carregado só quando o dono abre)
+fonts/       fontes hospedadas no próprio site
 assets/      imagens (logo, capa, equipe, produtos)
 vendor/      supabase.js (cliente do Supabase, versão 2.45.4)
 supabase/

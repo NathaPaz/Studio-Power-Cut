@@ -12,9 +12,8 @@
 <meta property="og:image" content="assets/cover.jpg">
 <link rel="icon" href="assets/logo.jpg">
 <link rel="apple-touch-icon" href="assets/logo.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<link rel="preload" href="fonts/barlow-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/instrument-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -22,6 +21,7 @@
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="config.js"></script>
 <script src="vendor/supabase.js"></script>
-<script src="app.js"></script>
+<script src="core.js"></script>
+<script src="client.js"></script>
 </body>
 </html>
