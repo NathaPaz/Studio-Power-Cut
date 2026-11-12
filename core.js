@@ -334,9 +334,10 @@ var DB=S.DB={
   uploadImage:async function(dataUrl){
     try{
       var m=/^data:([^;]+);base64,/.exec(dataUrl),type=m?m[1]:"image/jpeg",ext=type==="image/png"?"png":"jpg";
-      var blob=await (await fetch(dataUrl)).blob(),path="uploads/"+S.uid()+"."+ext;
+      var bin=atob(dataUrl.slice(dataUrl.indexOf(",")+1)),arr=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);
+      var blob=new Blob([arr],{type:type}),path="uploads/"+S.uid()+"."+ext;
       var r=await sb.storage.from("media").upload(path,blob,{contentType:type,cacheControl:"31536000"});
-      if(r.error)return null;
+      if(r.error){console.warn("upload",r.error.message);return null}
       return sb.storage.from("media").getPublicUrl(path).data.publicUrl;
     }catch(e){return null}
   }
