@@ -198,7 +198,7 @@ var CFG={
   produtos:{key:"products",title:"Produtos",lead:"Foto, preço e descrição. O cliente pede pelo WhatsApp da barbearia.",add:"Adicionar produto",pk:"name",
     fields:[["name","Nome","t"],["price","Preço (R$)","n"],["desc","Descrição curta","t"],["img","Foto","i"],["on","Disponível para pedido","c"]]},
   cursos:{key:"courses",title:"Curso e vídeo",lead:"O primeiro curso com link de vídeo aparece em destaque na tela inicial. O vídeo abre em outra aba (YouTube, Instagram e outros).",add:"Adicionar curso",pk:"name",
-    fields:[["name","Nome do curso","t"],["price","Valor (R$, opcional)","n"],["info","Data e carga horária","t"],["desc","Descrição","a"],["video","Link do vídeo de apresentação","u"],["img","Capa do vídeo (opcional)","i"]]},
+    fields:[["name","Nome do curso","t"],["price","Valor (R$, opcional)","n"],["info","Data e carga horária","t"],["desc","Descrição","a"],["video","Link do vídeo (YouTube, Vimeo ou .mp4)","u"],["img","Capa do vídeo (opcional)","i"]]},
   novidades:{key:"news",title:"Novidades",lead:"Avisos e promoções da tela inicial. As 3 mais recentes ficam visíveis.",add:"Adicionar novidade",pk:"title",
     fields:[["title","Título","t"],["text","Texto","a"],["img","Imagem (opcional)","i"]]}
 };

@@ -23,7 +23,16 @@ function mapsUrl(s){return "https://www.google.com/maps/search/?api=1&query="+en
 function igUrl(h){return "https://instagram.com/"+String(h||"").replace(/^@/,"").trim()}
 
 /* ---------- início ---------- */
-function viewHome(){
+function videoInfo(u){
+    if(!S.isUrl(u))return null;
+    var m=u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([\w-]{11})/i);
+    if(m)return {kind:"frame",src:"https://www.youtube-nocookie.com/embed/"+m[1]+"?autoplay=1&rel=0&playsinline=1",thumb:"https://i.ytimg.com/vi/"+m[1]+"/hqdefault.jpg"};
+    m=u.match(/vimeo\.com\/(?:video\/)?(\d+)/i);
+    if(m)return {kind:"frame",src:"https://player.vimeo.com/video/"+m[1]+"?autoplay=1",thumb:""};
+    if(/\.(mp4|webm|mov)(\?\S*)?$/i.test(u))return {kind:"file",src:u,thumb:""};
+    return null;
+  }
+  function viewHome(){
   var s=st.shop,courses=s.courses||[],feat=courses.filter(function(c){return S.isUrl(c.video)})[0]||courses[0];
   var news=(s.news||[]).slice().sort(function(a,b){return a.date<b.date?1:-1}).slice(0,3);
   var products=(s.products||[]).filter(function(p){return p.on!==false});
@@ -36,6 +45,14 @@ function viewHome(){
     (last?'<button class="quick-i" id="repeat"><span class="q-k">Repetir</span><span class="q-v">'+esc(svcNames(last.svc))+'</span>'+ic("right",18)+'</button>':"")+
     '<span class="quick-i ghosted" id="nextfree" hidden></span></div></div></header>'+
     '<main class="home">';
+  if(feat){
+    var vid=videoInfo(feat.video),cover=feat.img||(vid&&vid.thumb)||"";
+    var poster=vid?'<div class="poster" id="vp" data-kind="'+vid.kind+'" data-src="'+esc(vid.src)+'">'+(cover?'<img src="'+esc(cover)+'" alt="" loading="lazy" decoding="async">':"")+'<button class="play-btn" type="button" aria-label="Assistir ao vídeo de apresentação do curso '+esc(feat.name)+'"><span class="play">'+ic("play",26)+'</span><span class="cap">Assistir à apresentação</span></button></div>':
+      S.isUrl(feat.video)?'<a class="poster" target="_blank" rel="noopener" href="'+esc(feat.video)+'" aria-label="Assistir ao vídeo de apresentação do curso '+esc(feat.name)+'">'+(feat.img?'<img src="'+esc(feat.img)+'" alt="" loading="lazy" decoding="async">':"")+'<span class="play">'+ic("play",26)+'</span><span class="cap">Assistir à apresentação</span></a>':
+      feat.img?'<div class="poster off"><img src="'+esc(feat.img)+'" alt="" loading="lazy" decoding="async"><span class="cap">Vídeo de apresentação em breve</span></div>':"";
+    h+='<section class="blk" id="curso"><h2>Curso</h2>'+poster+'<h3 class="course-n">'+esc(feat.name)+'</h3>'+(feat.info?'<p class="muted">'+esc(feat.info)+'</p>':"")+(feat.desc?'<p>'+esc(feat.desc)+'</p>':"")+(feat.price?'<p class="price-big">'+S.money(feat.price)+'</p>':"")+
+      wa("Olá! Quero saber mais sobre o "+feat.name+".","Quero saber mais","")+'</section>';
+  }
   if(news.length){
     h+='<section class="blk"><h2>Novidades</h2>'+news.map(function(n){
       var u=S.waLink(s.whatsapp,"Olá! Vi a novidade \""+n.title+"\" no site e quero saber mais.");
@@ -46,11 +63,6 @@ function viewHome(){
   if(s.barbers.length){
     h+='<section class="blk"><h2>Equipe</h2><div class="crew">'+s.barbers.map(function(b){
       return '<a class="crew-i" href="#agendar-'+esc(b.id)+'">'+avatar(b,"crew-img")+'<span class="crew-n">'+esc(b.name)+'</span>'+(b.nick?'<span class="crew-k">'+esc(b.nick)+'</span>':"")+'<span class="crew-go">Agendar '+ic("arrow",15)+'</span></a>'}).join("")+'</div></section>';
-  }
-  if(feat){
-    var poster=!S.isUrl(feat.video)&&!feat.img?"":S.isUrl(feat.video)?'<a class="poster" target="_blank" rel="noopener" href="'+esc(feat.video)+'" aria-label="Assistir ao vídeo de apresentação do curso '+esc(feat.name)+'">'+(feat.img?'<img src="'+esc(feat.img)+'" alt="" loading="lazy" decoding="async">':"")+'<span class="play">'+ic("play",26)+'</span><span class="cap">Assistir à apresentação</span></a>':'<div class="poster off"><img src="'+esc(feat.img)+'" alt="" loading="lazy" decoding="async"><span class="cap">Vídeo de apresentação em breve</span></div>';
-    h+='<section class="blk" id="curso"><h2>Curso</h2>'+poster+'<h3 class="course-n">'+esc(feat.name)+'</h3>'+(feat.info?'<p class="muted">'+esc(feat.info)+'</p>':"")+(feat.desc?'<p>'+esc(feat.desc)+'</p>':"")+(feat.price?'<p class="price-big">'+S.money(feat.price)+'</p>':"")+
-      wa("Olá! Quero saber mais sobre o "+feat.name+".","Quero saber mais","")+'</section>';
   }
   if(products.length){
     h+='<section class="blk"><h2>Produtos</h2><div class="rail">'+products.map(function(p){
@@ -63,6 +75,13 @@ function viewHome(){
     '<footer class="foot-nav"><a href="#painel">Área do dono</a></footer></main>'+
     '<div class="cta-dock"><a class="btn big" href="#agendar">Agendar horário</a></div>';
   S.render(h,{view:"home"});
+  var vp=document.getElementById("vp");
+  if(vp)vp.querySelector(".play-btn").onclick=function(){
+    var src=vp.dataset.src,el;
+    if(vp.dataset.kind==="file"){el=document.createElement("video");el.src=src;el.controls=true;el.autoplay=true;el.playsInline=true;el.setAttribute("playsinline","");}
+    else{el=document.createElement("iframe");el.src=src;el.title="Vídeo de apresentação do curso";el.allow="autoplay; encrypted-media; picture-in-picture; fullscreen";el.allowFullscreen=true;el.referrerPolicy="strict-origin-when-cross-origin";}
+    vp.innerHTML="";vp.classList.add("playing");vp.appendChild(el);
+  };
   var rep=document.getElementById("repeat");
   if(rep)rep.onclick=function(){flow=newFlow();flow.svc=last.svc.slice();flow.barber=last.barber||"any";flow.name=last.name;flow.phone=last.phone;S.go("agendar/3")};
   /* próximo horário livre para o corte padrão */
